@@ -65,6 +65,7 @@ jobs:
       - name: Save Docker image
         run: |
           docker save -o fastapi-app.tar fastapi-app
+          chmod 777 fastapi-app.tar
 
       # Step 7: Copy Docker image to EC2 instance
       - name: Copy Docker image to EC2
