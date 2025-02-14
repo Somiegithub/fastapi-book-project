@@ -5,6 +5,14 @@ from fastapi.responses import JSONResponse
 
 from api.db.schemas import Book, Genre, InMemoryDB
 
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import Optional
+
+app = FastAPI()
+
+
 router = APIRouter()
 
 db = InMemoryDB()
@@ -60,3 +68,17 @@ async def update_book(book_id: int, book: Book) -> Book:
 async def delete_book(book_id: int) -> None:
     db.delete_book(book_id)
     return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content=None)
+
+# Add the GET endpoint to retrieve a book by its ID
+"""@app.get("/api/v1/books/{book_id}", response_model=Book)
+async def get_book(book_id: int):
+    if book_id not in db.books:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return db.books[book_id]"""
+
+@router.get("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
+async def get_book(book_id: int) -> Book:
+    book = db.books.get(book_id)
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return book
